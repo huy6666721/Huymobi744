@@ -1,62 +1,99 @@
-local ThuVien = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
+local Window = OrionLib:MakeWindow({Name = "huy367 hub", HidePremium = false, SaveConfig = true, ConfigFolder = "OrionTest"})
 
-local CuaSo = ThuVien:CreateWindow({
-    Title = "huy367 Hub",
-    SubTitle = "Blox Fruits Edition",         
-    TabWidth = 160,
-    Size = UDim2.fromOffset(580, 460),
-    Acrylic = true, 
-    Theme = "Dark",                     
-    MinimizeKey = Enum.KeyCode.LeftControl 
+-- ==================== TRANG CHỦ ====================
+local TabHome = Window:MakeTab({
+	Name = "Trang Chủ",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
 })
 
-local Muc = {
-    Chinh = CuaSo:AddTab({ Title = "Cày Tự Động", Icon = "swords" }), 
-    HeThong = CuaSo:AddTab({ Title = "Hệ Thống", Icon = "settings" }) 
-}
+TabHome:AddLabel("Chào mừng " .. game.Players.LocalPlayer.Name .. " đến với huy367 hub!")
 
--- --- TỰ ĐỘNG FARM LEVEL ---
-local NutAutoFarm = Muc.Chinh:AddToggle("AutoFarmLevel", {Title = "Auto Farm Level ⚔️", Default = false })
-NutAutoFarm:OnChanged(function(TrangThai)
-    _G.AutoFarm = TrangThai
-    task.spawn(function()
-        while _G.AutoFarm do
-            -- Hệ thống tự động gom quái và kích hoạt đòn đánh của Blox Fruits
-            pcall(function()
-                local ChucNangCombat = game:GetService("ReplicatedStorage").Modules.Net:FindFirstChild("RE/CombatRegister")
-                if ChucNangCombat then
-                    ChucNangCombat:FireServer(game:GetService("Players").LocalPlayer.Character.Combat)
-                end
-            end)
-            task.wait(0.1)
-        end
-    end)
-end)
-
--- --- CHỐNG AFK TRONG BLOX FRUITS ---
-Muc.HeThong:AddButton({
-    Title = "Kích hoạt Chống Treo Máy (Anti-AFK)",
-    Description = "Giúp treo máy cày Blox Fruits qua đêm không bị văng",
-    Callback = function()
-        local nguoiDungAo = game:GetService("VirtualUser")
-        game:GetService("Players").LocalPlayer.Idled:Connect(function()
-            nguoiDungAo:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
-            task.wait(1)
-            nguoiDungAo:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
-        end)
-        
-        ThuVien:Notify({
-            Title = "huy367 Hub",
-            Content = "Đã bật Chống Treo Máy thành công!",
-            Duration = 3
-        })
-    end
+TabHome:AddButton({
+	Name = "Bật Chức Năng Tổng Hợp",
+	Callback = function()
+		print("Đã kích hoạt hệ thống!")
+	end    
 })
 
-CuaSo:SelectTab(1)
-
-ThuVien:Notify({
-    Title = "huy367 Hub",
-    Content = "Bản Blox Fruits đã sẵn sàng!",
-    Duration = 5
+-- ==================== TÙY CHỈNH NHÂN VẬT ====================
+local TabPlayer = Window:MakeTab({
+	Name = "Người Chơi",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
 })
+
+-- Thanh trượt thay đổi tốc độ chạy
+TabPlayer:AddSlider({
+	Name = "Tốc độ chạy (WalkSpeed)",
+	Min = 16,
+	Max = 500,
+	Default = 16,
+	Color = Color3.fromRGB(255,255,255),
+	Increment = 1,
+	ValueName = "Speed",
+	Callback = function(Value)
+		game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
+	end    
+})
+
+-- Thanh trượt thay đổi độ cao khi nhảy
+TabPlayer:AddSlider({
+	Name = "Độ cao nhảy (JumpPower)",
+	Min = 50,
+	Max = 500,
+	Default = 50,
+	Color = Color3.fromRGB(255,255,255),
+	Increment = 1,
+	ValueName = "Power",
+	Callback = function(Value)
+		game.Players.LocalPlayer.Character.Humanoid.JumpPower = Value
+	end    
+})
+
+-- Bật/Tắt tính năng nhìn xuyên tường (Infinite Zoom)
+TabPlayer:AddToggle({
+	Name = "Mở rộng khoảng cách Camera",
+	Default = false,
+	Callback = function(Value)
+		if Value then
+			game.Players.LocalPlayer.CameraMaxZoomDistance = 100000
+		else
+			game.Players.LocalPlayer.CameraMaxZoomDistance = 400
+		end
+	end
+})
+
+-- ==================== TỰ ĐỘNG (KHUNG CHỨC NĂNG) ====================
+local TabAutomation = Window:MakeTab({
+	Name = "Tự Động (Auto)",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+-- Khung thiết lập Auto Farm
+TabAutomation:AddToggle({
+	Name = "Tự động đánh (Auto Farm)",
+	Default = false,
+	Callback = function(Value)
+		_G.AutoFarm = Value
+		while _G.AutoFarm do
+			task.wait(0.5)
+			print("Đang quét mục tiêu...")
+		end
+	end
+})
+
+-- Cài đặt phím tắt để Ẩn/Hiện Menu nhanh (Mặc định là phím LeftControl)
+OrionLib:MakeBind({
+	Name = "Phím tắt ẩn/hiện Menu",
+	Default = Enum.KeyCode.LeftControl,
+	NoIcon = false,
+	Callback = function()
+		-- Hệ thống tự động xử lý ẩn giao diện của OrionLib
+	end    
+})
+
+OrionLib:Init()
+*
