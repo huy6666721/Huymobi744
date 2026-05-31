@@ -1,0 +1,62 @@
+local ThuVien = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+
+local CuaSo = ThuVien:CreateWindow({
+    Title = "huy367 Hub",
+    SubTitle = "Blox Fruits Edition",         
+    TabWidth = 160,
+    Size = UDim2.fromOffset(580, 460),
+    Acrylic = true, 
+    Theme = "Dark",                     
+    MinimizeKey = Enum.KeyCode.LeftControl 
+})
+
+local Muc = {
+    Chinh = CuaSo:AddTab({ Title = "Cày Tự Động", Icon = "swords" }), 
+    HeThong = CuaSo:AddTab({ Title = "Hệ Thống", Icon = "settings" }) 
+}
+
+-- --- TỰ ĐỘNG FARM LEVEL ---
+local NutAutoFarm = Muc.Chinh:AddToggle("AutoFarmLevel", {Title = "Auto Farm Level ⚔️", Default = false })
+NutAutoFarm:OnChanged(function(TrangThai)
+    _G.AutoFarm = TrangThai
+    task.spawn(function()
+        while _G.AutoFarm do
+            -- Hệ thống tự động gom quái và kích hoạt đòn đánh của Blox Fruits
+            pcall(function()
+                local ChucNangCombat = game:GetService("ReplicatedStorage").Modules.Net:FindFirstChild("RE/CombatRegister")
+                if ChucNangCombat then
+                    ChucNangCombat:FireServer(game:GetService("Players").LocalPlayer.Character.Combat)
+                end
+            end)
+            task.wait(0.1)
+        end
+    end)
+end)
+
+-- --- CHỐNG AFK TRONG BLOX FRUITS ---
+Muc.HeThong:AddButton({
+    Title = "Kích hoạt Chống Treo Máy (Anti-AFK)",
+    Description = "Giúp treo máy cày Blox Fruits qua đêm không bị văng",
+    Callback = function()
+        local nguoiDungAo = game:GetService("VirtualUser")
+        game:GetService("Players").LocalPlayer.Idled:Connect(function()
+            nguoiDungAo:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+            task.wait(1)
+            nguoiDungAo:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+        end)
+        
+        ThuVien:Notify({
+            Title = "huy367 Hub",
+            Content = "Đã bật Chống Treo Máy thành công!",
+            Duration = 3
+        })
+    end
+})
+
+CuaSo:SelectTab(1)
+
+ThuVien:Notify({
+    Title = "huy367 Hub",
+    Content = "Bản Blox Fruits đã sẵn sàng!",
+    Duration = 5
+})
